@@ -18,7 +18,7 @@ namespace poker_database_cli.db
         public void deletePlayerHands(string nickName, List<long> handNumbers);
     }
 
-    class DescendingComparer : IComparer<long> {
+    public class DescendingComparer : IComparer<long> {
         public int Compare(long x, long y) {
             return -x.CompareTo(y);
         }

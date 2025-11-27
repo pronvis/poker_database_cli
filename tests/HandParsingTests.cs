@@ -141,16 +141,16 @@ using poker_database_cli.hhparser;
 
             {
                 var lastHandStackSizes = hands[2].PlayersWithStack;  
-                Assert.AreEqual(new PlayerWithStack("lepa308", 1375), lastHandStackSizes[0], "first player stack size");
-                Assert.AreEqual(new PlayerWithStack("angrypaca", 2500), lastHandStackSizes[1], "2nd player stack size");
-                Assert.AreEqual(new PlayerWithStack("limiaoxun", 1045), lastHandStackSizes[2], "3rd player stack size");
-                Assert.AreEqual(new PlayerWithStack("Highway25", 2761), lastHandStackSizes[3], "4th player stack size");
-                Assert.AreEqual(new PlayerWithStack("fooxy love", 3770), lastHandStackSizes[4], "5th player stack size");
+                Assert.AreEqual(new PlayerWithStack("lepa308", 1375, Currency.Dollar), lastHandStackSizes[0], "first player stack size");
+                Assert.AreEqual(new PlayerWithStack("angrypaca", 2500, Currency.Dollar), lastHandStackSizes[1], "2nd player stack size");
+                Assert.AreEqual(new PlayerWithStack("limiaoxun", 1045, Currency.Dollar), lastHandStackSizes[2], "3rd player stack size");
+                Assert.AreEqual(new PlayerWithStack("Highway25", 2761, Currency.Dollar), lastHandStackSizes[3], "4th player stack size");
+                Assert.AreEqual(new PlayerWithStack("fooxy love", 3770, Currency.Dollar), lastHandStackSizes[4], "5th player stack size");
             }
             {
                 var lastHandStackSizes = hands[3].PlayersWithStack;  
-                Assert.AreEqual(new PlayerWithStack("LuNa_sTaR1", 4772), lastHandStackSizes[0], "LuNa_sTaR1 stack size");
-                Assert.AreEqual(new PlayerWithStack("Luckbox6991", 2590), lastHandStackSizes[3], "Luckbox6991 stack size");
+                Assert.AreEqual(new PlayerWithStack("LuNa_sTaR1", 4772, Currency.Euro), lastHandStackSizes[0], "LuNa_sTaR1 stack size");
+                Assert.AreEqual(new PlayerWithStack("Luckbox6991", 2590, Currency.Euro), lastHandStackSizes[3], "Luckbox6991 stack size");
             }
         }
         

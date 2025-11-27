@@ -103,14 +103,24 @@ using poker_database_cli.db;
                 db.store(hand);
             }
 
-            var lepasGames = db.getPlayerHandsNumber("lepa308");
-            CollectionAssert.AreEqual(lepasGames, new SortedSet<long>([92715546927, 92715560030, 92715569566]));
-            
-            var limiaoxunGames = db.getPlayerHandsNumber("limiaoxun");
-            CollectionAssert.AreEqual(limiaoxunGames, new SortedSet<long>([92715546927, 92715560030]));
+            {
+                var lepasGames = db.getPlayerHandsNumber("lepa308");
+                var expected = new SortedSet<long>([92715569566, 92715560030, 92715546927], new DescendingComparer());
+                CollectionAssert.AreEqual(lepasGames, expected);
+            }
 
-            var limiaoxunTheNewGames = db.getPlayerHandsNumber("limiaoxun_the_new");
-            CollectionAssert.AreEqual(limiaoxunTheNewGames, new SortedSet<long>([92715569566]));
+            {
+                var limiaoxunGames = db.getPlayerHandsNumber("limiaoxun");
+                var expected = new SortedSet<long>([92715560030, 92715546927], new DescendingComparer());
+                CollectionAssert.AreEqual(limiaoxunGames, expected);
+            }
+
+            {
+                var limiaoxunTheNewGames = db.getPlayerHandsNumber("limiaoxun_the_new");
+                var expected = new SortedSet<long>([92715569566], new DescendingComparer());
+                CollectionAssert.AreEqual(limiaoxunTheNewGames, expected);
+
+            }
         }
         
     }
