@@ -11,7 +11,7 @@ namespace poker_database_cli.db
         public long GetHandsCount();
         public long GetPlayersCount();
         public Hand? TryGetHand(long handNumber);
-        public void DeleteHand(long handNumber);
+        public bool DeleteHand(long handNumber);
 
         public ReadOnlySet<long> getPlayerHandsNumber(string nickName);
         public ReadOnlySet<long> getDeletedHandNumbers();
@@ -87,12 +87,15 @@ namespace poker_database_cli.db
             return null;
         }
 
-        public void DeleteHand(long handNumber)
+        public bool DeleteHand(long handNumber)
         {
             if(handById.Remove(handNumber))
             {
                 removedHands.Add(handNumber);
+                return true;
             }
+
+            return false;
         }
 
         public ReadOnlySet<long> getDeletedHandNumbers()

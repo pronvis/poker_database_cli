@@ -132,8 +132,13 @@ namespace poker_database_cli.cli
 
         private void processDeleteHandCommand(long handNumber)
         {
-            db.DeleteHand(handNumber);
-            Console.WriteLine("Hand #{0} has been deleted", handNumber);
+            if(db.DeleteHand(handNumber))
+            {
+                Console.WriteLine("Hand #{0} has been deleted", handNumber);
+            } else
+            {
+                Console.WriteLine("Hand #{0} has not been deleted, cause it doesnt exists", handNumber);
+            }
         }
 
         private void processGetDeletedHandNumbersCommand()
