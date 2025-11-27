@@ -17,6 +17,8 @@ namespace poker_database_cli.cli
         {
             {"GetPlayersGeneralInfo", GetPlayersGeneralInfo.parse},
             {"GetPlayerLastInfo", GetPlayerLastInfo.parse},
+            {"DeleteHandFromDb", DeleteHandFromDb.parse},
+            {"GetDeletedHandNumbers", GetDeletedHandNumbers.parse},
         };
 
         public static IEnumerable<Command> parse(string str)
@@ -56,17 +58,36 @@ namespace poker_database_cli.cli
         public abstract List<String> GetArguments();
     }
 
-    /// <summary>
-    /// First argument is always a player nickname.
-    /// </summary>
-    public class GetPlayerLastInfo : Command
+    public class GetPlayersGeneralInfo : Command
+    {
+        private GetPlayersGeneralInfo()
+        {}
+
+
+        public override List<String> GetArguments()
+        {
+            return [];
+        }
+
+        public static GetPlayersGeneralInfo? parse(IEnumerator<string> iter)
+        {
+            return new GetPlayersGeneralInfo();
+        }
+
+        public override CommandType GetCommandType()
+        {
+            return CommandType.GetPlayersGeneralInfo;
+        }
+    }
+
+        public class GetPlayerLastInfo : Command
     {
         private GetPlayerLastInfo(string nickName)
         {
             NickName = nickName;
         }
 
-         public string NickName { get; }
+        private string NickName { get; }
 
         public override List<String> GetArguments()
         {
@@ -103,25 +124,75 @@ namespace poker_database_cli.cli
         }
     }
 
-    public class GetPlayersGeneralInfo : Command
+    public class DeleteHandFromDb : Command
     {
-        private GetPlayersGeneralInfo()
-        {}
+        private DeleteHandFromDb(long handNumber)
+        {
+            HandNumber = handNumber;
+        }
 
+        private long HandNumber { get; }
+
+        public override List<String> GetArguments()
+        {
+            return [HandNumber.ToString()];
+        }
+
+        public static DeleteHandFromDb? parse(IEnumerator<string> iter)
+        {
+            iter.MoveNext();
+            var nameArgument = iter.Current;
+            if (nameArgument == null)
+            {
+                return null;
+            }
+            
+            if (nameArgument == "-n" || nameArgument == "--HandNumber") {
+                iter.MoveNext();
+                var handNumberStr = iter.Current;
+                if (handNumberStr == null)
+                {
+                    return null;
+                }
+
+                try
+                {
+                    long handNumber = Int64.Parse(handNumberStr);
+                    return new DeleteHandFromDb(handNumber);
+                } catch (Exception)
+                {
+                    Console.Error.WriteLine("Wrong 'hand number' argument: {0}. It should be integer value.", handNumberStr);
+                    return null;
+                }
+            } else
+            {
+                return null;
+            }
+        }
+
+        public override CommandType GetCommandType()
+        {
+            return CommandType.DeleteHandFromDb;
+        }
+    }
+
+    public class GetDeletedHandNumbers : Command
+    {
+        private GetDeletedHandNumbers(){}
 
         public override List<String> GetArguments()
         {
             return [];
         }
 
-        public static GetPlayersGeneralInfo? parse(IEnumerator<string> iter)
+        public static GetDeletedHandNumbers? parse(IEnumerator<string> iter)
         {
-            return new GetPlayersGeneralInfo();
+            return new GetDeletedHandNumbers();
         }
 
         public override CommandType GetCommandType()
         {
-            return CommandType.GetPlayersGeneralInfo;
+            return CommandType.GetDeletedHandNumbers;
         }
     }
 }

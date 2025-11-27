@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using System.Dynamic;
+using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 
 namespace poker_database_cli.db
 {
@@ -8,8 +11,11 @@ namespace poker_database_cli.db
         public long GetHandsCount();
         public long GetPlayersCount();
         public Hand? TryGetHand(long handNumber);
+        public void DeleteHand(long handNumber);
 
-        public SortedSet<long> getPlayerHandsNumber(string nickName);
+        public ReadOnlySet<long> getPlayerHandsNumber(string nickName);
+        public ReadOnlySet<long> getDeletedHandNumbers();
+        public void deletePlayerHands(string nickName, List<long> handNumbers);
     }
 
     class DescendingComparer : IComparer<long> {
@@ -22,11 +28,13 @@ namespace poker_database_cli.db
     {
         private Dictionary<String, SortedSet<long>> playerHandsIndex;
         private Dictionary<long, Hand> handById;
+        private SortedSet<long> removedHands;
 
         public InMemoryHHDb()
         {
             playerHandsIndex = [];
             handById = [];
+            removedHands = new SortedSet<long>(new DescendingComparer());;
         }
 
         public void store(Hand hand)
@@ -46,7 +54,7 @@ namespace poker_database_cli.db
             }
         }
 
-        public SortedSet<long> getPlayerHandsNumber(string nickName)
+        public ReadOnlySet<long> getPlayerHandsNumber(string nickName)
         {
             SortedSet<long>? playersHands;
             playerHandsIndex.TryGetValue(nickName, out playersHands);
@@ -55,7 +63,7 @@ namespace poker_database_cli.db
                 return [];
             } 
 
-            return playersHands;
+            return playersHands.AsReadOnly();
         }
 
         public long GetHandsCount()
@@ -77,6 +85,34 @@ namespace poker_database_cli.db
                 return result;
             }
             return null;
+        }
+
+        public void DeleteHand(long handNumber)
+        {
+            if(handById.Remove(handNumber))
+            {
+                removedHands.Add(handNumber);
+            }
+        }
+
+        public ReadOnlySet<long> getDeletedHandNumbers()
+        {
+            return removedHands.AsReadOnly();
+        }
+
+        public void deletePlayerHands(string nickName, List<long> handNumbers)
+        {
+            SortedSet<long>? playersHands;
+            playerHandsIndex.TryGetValue(nickName, out playersHands);
+            if (playersHands == null)
+            {
+                return;
+            } 
+
+            foreach(var hand in handNumbers)
+            {
+                playersHands.Remove(hand);
+            }
         }
     }
 }

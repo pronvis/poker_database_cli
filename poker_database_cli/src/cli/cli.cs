@@ -11,7 +11,6 @@ namespace poker_database_cli.cli
     {
         private HHDb db;
         private bool finished;
-
         public CLI(HHDb db)
         {
             this.db = db;
@@ -46,9 +45,19 @@ namespace poker_database_cli.cli
                         break;
                     }
 
+                    case CommandType.DeleteHandFromDb: {
+                        long handNumber = Int64.Parse(parsedCommand.GetArguments()[0]); //it is safe here, cause we already parsed it in 'DeleteHandFromDb' class
+                        processDeleteHandCommand(handNumber);
+                        break;
+                    }
+
+                    case CommandType.GetDeletedHandNumbers: {
+                        processGetDeletedHandNumbersCommand();
+                        break;
+                    }
+
                     default:
                     {
-                        Console.WriteLine("xxx");
                         break;
                     }
                 };
@@ -64,6 +73,8 @@ namespace poker_database_cli.cli
         private void processGetPlayerLastInfoCommand(string nickName)
         {
             var playersHands = db.getPlayerHandsNumber(nickName);
+            var deletedHands = db.getDeletedHandNumbers();
+            List<long> handsToDeleteFromPlayerIndex = new(32);
             int i = 0;
             Console.WriteLine("Player '{0}' played {1} hands", nickName, playersHands.Count);
             Console.WriteLine("His last 10 played hands:");
@@ -71,7 +82,13 @@ namespace poker_database_cli.cli
             {
                 if (i == 10)
                 {
-                    return;
+                    break;
+                }
+
+                if(deletedHands.Contains(handNumber))
+                {
+                    handsToDeleteFromPlayerIndex.Add(handNumber);
+                    continue;
                 }
 
                 var hand = db.TryGetHand(handNumber);
@@ -100,15 +117,30 @@ namespace poker_database_cli.cli
                         }
                     }
 
-                    if(stackSizeInfo == null)
-                    {
-                        stackSizeInfo = "Unknown stack";
-                    }
+                    stackSizeInfo ??= "Unknown stack";
 
                     Console.WriteLine("{0} | {1} | {2}", handV.HandNumber, dealtCards, stackSizeInfo);
                     i++;
                 }
             }
+
+            if(handsToDeleteFromPlayerIndex.Count != 0)
+            {
+                db.deletePlayerHands(nickName, handsToDeleteFromPlayerIndex);
+            }
+        }
+
+        private void processDeleteHandCommand(long handNumber)
+        {
+            db.DeleteHand(handNumber);
+            Console.WriteLine("Hand #{0} has been deleted", handNumber);
+        }
+
+        private void processGetDeletedHandNumbersCommand()
+        {
+            var deletedHands = db.getDeletedHandNumbers();
+            var deletedHandsStr = String.Join(", ", deletedHands.Select(h => h.ToString()));
+            Console.WriteLine("Hands that has been deleted: [{0}]", deletedHandsStr);
         }
 
         private static string StackInfoIntoString(PlayerWithStack stackInfo)
